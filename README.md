@@ -1,34 +1,56 @@
-# 基于 Spark 的音乐专辑数据分析展示
+# 基于 PySpark 的音乐专辑销量数据分析看板
 
-本项目复现并改进自厦大数据库实验室博客的音乐专辑分析示例。
+对 15,000+ 条音乐专辑销量数据进行 PySpark 清洗与统计分析，基于 Flask + ECharts 搭建交互式可视化看板，从品类结构、年度趋势、评分体系等维度完成数据洞察。
 
-先决条件
-- Python 3.8+
-- Java（Spark 运行需要 Java）
-- 建议使用虚拟环境
+## 看板效果
 
-安装依赖
+**各类型专辑销量统计图**（ Indie 类销量最高，接近 47 亿，Pop 排名第二）：
+
+![各类型专辑销量统计图](screenshots/genre-sales.png)
+
+**总销量前五的专辑类型的各年份销量分析图**：
+
+![各年份销量分析](screenshots/genre-year-sales.png)
+
+**近20年每年发行的专辑数量和单曲数量统计图**：
+
+![年度发行统计](screenshots/year-tracks-and-sales.png)
+
+**总销量前五的专辑类型的评分分析图**：
+
+![评分分析](screenshots/genre-critic.png)
+
+## 技术栈
+
+- **数据处理**：PySpark（清洗、类型转换、去重、聚合统计）
+- **后端**：Flask
+- **可视化**：ECharts
+- **数据规模**：15,000+ 条专辑销量记录（albums.csv）
+
+## 项目结构
+
+```
+├── albums.csv                 原始数据（15,000+ 条）
+├── code/
+│   ├── main.py                PySpark 清洗与统计，输出 JSON
+│   ├── SparkFlask.py          Flask Web 服务
+│   ├── templates/             ECharts 页面模板
+│   ├── static/data/           分析结果 JSON
+│   └── static/js/             ECharts / jQuery
+└── screenshots/               看板截图
+```
+
+## 运行方式
 
 ```bash
-python -m venv .venv
-.\.venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-生成可视化数据（使用本地 Spark）
-
-```bash
 cd code
-python main.py
+python main.py          # PySpark 统计分析，生成 JSON
+python SparkFlask.py    # 启动看板，访问 http://127.0.0.1:5000
 ```
 
-运行 Web 应用（Flask）
+## 分析结论
 
-```bash
-cd code
-python SparkFlask.py
-```
-
-说明
-- `main.py` 会读取仓库根目录下的 `albums.csv`，并把生成的 JSON 写入 `code/static/data/` 目录，供前端模板使用。
-- 如需在生产环境运行，请使用 `spark-submit` 或配置完整的 Spark 集群。
+- Indie 类型专辑总销量最高（接近 47 亿），Pop 排名第二（约 39 亿）
+- 三大品类（Indie / Pop / Rap）合计占销量 76% 以上，品类集中度高
+- 详见 [REPORT.md](REPORT.md)（数据流七环节完整报告）
